@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Food Menu</title>
+</head>
+
+<body>
+
+    <h1>Campus Food Menu</h1>
+
+    <button onclick="loadMeals()">Load All Meals</button>
+
+    <br><br>
+
+    <input type="number" id="mealId" placeholder="1">
+    <button onclick="findMeal()">Find Meal</button>
+
+    <p id="status"></p>
+
+    <table id="mealTable" border="1" cellpadding="8" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody id="mealBody"></tbody>
+    </table>
+
+    <script>
+        async function loadMeals(){
+
+            const response = await fetch("api/meals");
+            const meals = await response.json();
+
+            renderMeals(meals);
+        }
+
+        async function findMeal(){
+
+            const id = document.getElementById("mealId").value;
+            const response = await fetch("api/meals/" + id);
+
+            if(!response.ok){
+                document.getElementById("status").textContent = "Meal not found";
+                document.getElementById("mealBody").innerHTML = "";
+                return;
+            }
+
+            const meal = await response.json();
+
+            renderMeals([meal]);
+        }
+
+        function renderMeals(meals){
+
+            document.getElementById("status").textContent = 
+                "Showing " + meals.length + " meal(s)";
+
+            const body = document.getElementById("mealBody");
+            body.innerHTML = "";
+
+            meals.forEach(meal=>{
+                const row = document.createElement("tr");
+
+                row.innerHTML = 
+                    "<td>" + meal.id + "</td>" +
+                    "<td>" + meal.name + "</td>" +
+                    "<td>" + meal.category + "</td>" +
+                    "<td>&#8369;" + meal.price + "</td>";
+
+                body.appendChild(row);
+            });
+        }
+
+
+    </script>
+
+
+</body>
+</html>
